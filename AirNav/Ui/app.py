@@ -2,6 +2,7 @@ import tkinter as tk
 from math import cos, sin, radians
 import threading
 import time 
+import os
 
 class Ui:
 
@@ -58,17 +59,30 @@ class Ui:
         thread1.start()
         def option_clicked(option):
             global end
-            if option == 10:
-                with open("Ui/end.txt" ,"w") as f :
-                    f.write("True")
-                time.sleep(1)
-                root.destroy()
-                exit()
-            elif option == 9:
-                with open("Ui/val.txt" ,"w") as f :
-                    f.write("False")
-            else:
-                print(f"Option {option} clicked!")
+            with open("setting/btn.txt" ,"r") as f :
+                do = f.read()
+            do = do.split("\n")
+            for i in range(len(do)) :
+                if do[i] == "exit":
+                    if option == i+1:
+                        with open("Ui/end.txt" ,"w") as f :
+                            f.write("True")
+                        time.sleep(1)
+                        root.destroy()
+                        exit()
+                elif do[i] == "hide":
+                    if option == i+1:
+                        with open("Ui/val.txt" ,"w") as f :
+                            f.write("False")
+                elif do[i] == "mouse":
+                    if option ==i+1:
+                        with open("Ui/val.txt" ,"w") as f :
+                            f.write("False")
+                        with open("Ui/mouse.txt" ,"w") as f :
+                            f.write("True")
+                else:
+                    if option == i+1:
+                        os.system(do[i])
 
         def save_btn_pos(angle,x,y,option):
 
@@ -85,8 +99,8 @@ class Ui:
             root.after(200, stay_on_top)
         # تابعی برای ایجاد گزینه‌ها
         def create_option(angle, option, real_angle):
-            x = center_x + radius * cos(angle)
-            y = center_y + radius * sin(angle)
+            x = center_x + radius * sin(angle)
+            y = center_y + radius * cos(angle)
             save_btn_pos(real_angle,x,y,option)
             option_button = canvas.create_oval(x-30, y-30, x+30, y+30, fill="white")
             option_text = canvas.create_text(x, y, text=str(option), font=("Arial", 12), fill="black")

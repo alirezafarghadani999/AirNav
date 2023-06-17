@@ -10,7 +10,7 @@ import tkinter
 with open("Ui/end.txt" ,"w") as f :
     f.write("False")
 
-minx , miny ,maxx, maxy = 0,0,0,0
+minx , miny ,maxx, maxy = 1,1,5,5
 minset , maxset = False ,False
 set_openmenu_point = 0
 
@@ -18,7 +18,7 @@ flip = True
 fix_val = 10
 
 hold_1 , hold_2 = 0,0
-hold_time = 20
+hold_time = 25
 while_hold = hold_time
 
 w_screen = tkinter.Tk().winfo_screenwidth()
@@ -42,6 +42,19 @@ def track():
             else:
                 return False
 
+    def still_run():
+            with open("Ui/end.txt" ,"r") as f :
+                    if f.read() == "True":
+                        return True
+                    return False
+
+    def mouse_mod():
+            with open("Ui/mouse.txt" ,"r") as f :
+                    if f.read() == "True":
+                        return True
+                    return False
+
+
 
     global minx , miny ,maxx, maxy , minset , maxset , set_openmenu_point , flip , fix_val , hold_1 ,hold_2 ,while_hold
     global w_screen, h_screen
@@ -61,11 +74,6 @@ def track():
                 print("Could not read frame from webcam.")
                 break
 
-            def still_run():
-                    with open("Ui/end.txt" ,"r") as f :
-                            if f.read() == "True":
-                                return True
-                            return False
 
             if hold_1 != 0 and hold_1 != 10 or hold_2 != 0 and hold_2 != 10:
                 if while_hold <= hold_time:
@@ -96,7 +104,7 @@ def track():
 
                 yc , xc = int(image.shape[0]/2), int(image.shape[1]/2)
                 cv2.circle(image, (xc, yc), 3, (0, 0, 0), -1)
-                cv2.rectangle(image,(minx,miny,abs(maxx-minx),abs(maxy-miny)),(0,0,255),1)
+                cv2.rectangle(image,(minx,miny,int(maxx),int(maxy)),(0,0,255),1)
                 
                 if results.multi_hand_landmarks[0] :
                         
@@ -149,10 +157,14 @@ def track():
                                 xb,yb = float(pos.split(";")[1]),float(pos.split(";")[2])
                                 if (btn_angle-10 <= angel <= btn_angle+10):
                                     pyautogui.moveTo(((w_screen/2)-250+xb), ((h_screen/2)-270+yb))
+                        
+                        if mouse_mod():
+                            if minx < xi <maxx and miny < yi < maxy:
+                                pyautogui.moveTo()
 
                         if maxset == False:
                             maxx = xt1
-                            maxy = yt1
+                            maxy = (maxx*h_screen)/(w_screen) 
     
 
 
@@ -209,8 +221,8 @@ def track():
                                     
 
                         if maxset == False:
-                            maxx = xt
-                            maxy = yt
+                            maxx = xt1
+                            maxy = (maxx*h_screen)/(w_screen) 
 
                     if hand1_click and hand2_click:
                         minset ,maxset = True, True
