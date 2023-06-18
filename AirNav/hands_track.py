@@ -10,6 +10,7 @@ import tkinter
 with open("Ui/end.txt" ,"w") as f :
     f.write("False")
 
+
 minx , miny ,maxx, maxy = 1,1,5,5
 minset , maxset = False ,False
 set_openmenu_point = 0
@@ -18,7 +19,7 @@ flip = True
 fix_val = 10
 
 hold_1 , hold_2 = 0,0
-hold_time = 25
+hold_time = 20
 while_hold = hold_time
 
 w_screen = tkinter.Tk().winfo_screenwidth()
@@ -28,8 +29,6 @@ thread1 =  threading.Thread(target=Ui.create_menu)
 
 
 def track():
-
-
 
     def show_menu():
         with open("Ui/val.txt" ,"w") as f :
@@ -89,9 +88,13 @@ def track():
                         while_hold = hold_time
                         
             if hold_1 == 10 or hold_2 == 10:
-                pass
+                if hold_1 ==10:
+                    with open("Ui/mouse.txt" ,"w") as f :
+                        f.write("False")
+
             if hold_1 == 10 and hold_2 == 10:
-                show_menu()
+                if not mouse_mod():
+                    show_menu()
             if flip:
                 image = cv2.flip(image, 1)
 
@@ -99,12 +102,13 @@ def track():
             results = hands.process(image_rgb)
 
             hand1_click , hand2_click = False , False
+            cv2.rectangle(image,(int(minx),int(miny),int(maxx-minx),int(maxy-miny)),(0,0,255),1)
+
             
             if results.multi_hand_landmarks:
 
                 yc , xc = int(image.shape[0]/2), int(image.shape[1]/2)
                 cv2.circle(image, (xc, yc), 3, (0, 0, 0), -1)
-                cv2.rectangle(image,(minx,miny,int(maxx),int(maxy)),(0,0,255),1)
                 
                 if results.multi_hand_landmarks[0] :
                         
@@ -126,17 +130,24 @@ def track():
 
                     if xt1 -fix_val < xi1 < xt1 + fix_val and yt1 -fix_val < yi1 < yt1+fix_val :
                         hand1_click = True
-                        hold_1 += 1
                         if check_menu() and while_hold == hold_time and results.multi_handedness[0].classification[0].label == "Right":
+                            pyautogui.click()
+                        if mouse_mod() and while_hold == hold_time and results.multi_handedness[0].classification[0].label == "Right":
                             pyautogui.click()
 
                     if results.multi_handedness[0].classification[0].label == "Left":
+                        if xt1 -fix_val < xi1 < xt1 + fix_val and yt1 -fix_val < yi1 < yt1+fix_val :
+                            hold_1 += 1
                         if minset == False:
                             minx = xt1
                             miny = yt1
 
+
                     
                     if results.multi_handedness[0].classification[0].label == "Right":
+                        if xt1 -fix_val < xi1 < xt1 + fix_val and yt1 -fix_val < yi1 < yt1+fix_val :
+                            hold_2 += 1
+
                         cv2.line(image,(xw1,yw1),(xc,yc),(0,0,0))
                         if xw1 >= xc and yw1 <= yc :
                             angel = numpy.degrees( numpy.arcsin(abs(yc-yw1) / numpy.sqrt(abs(yc-yw1)**2 + abs(xc-xw1)**2)) )
@@ -159,8 +170,8 @@ def track():
                                     pyautogui.moveTo(((w_screen/2)-250+xb), ((h_screen/2)-270+yb))
                         
                         if mouse_mod():
-                            if minx < xi <maxx and miny < yi < maxy:
-                                pyautogui.moveTo()
+                            if minx <= xi1 <=maxx and miny <= yi1 <= maxy:
+                                pyautogui.moveTo((xi1-minx)*(w_screen/(maxx-minx)),(yi1-miny)*(h_screen/(maxy-miny)))
 
                         if maxset == False:
                             maxx = xt1
@@ -188,16 +199,21 @@ def track():
 
                     if xt -fix_val < xi < xt + fix_val and yt -fix_val < yi < yt+fix_val :
                         hand2_click = True
-                        hold_2 += 1
                         if check_menu() and while_hold == hold_time and results.multi_handedness[0].classification[0].label == "Right":
+                            pyautogui.click()
+                        if mouse_mod() and while_hold == hold_time and results.multi_handedness[0].classification[0].label == "Right":
                             pyautogui.click()
 
                     if results.multi_handedness[1].classification[0].label == "Left":
+                        if xt -fix_val < xi < xt + fix_val and yt -fix_val < yi < yt+fix_val :
+                            hold_1 += 1
                         if minset == False:
                             minx = xt
                             miny = yt
 
                     if results.multi_handedness[1].classification[0].label == "Right":
+                        if xt -fix_val < xi < xt + fix_val and yt -fix_val < yi < yt+fix_val :
+                            hold_2 += 1
                         cv2.line(image,(xw,yw),(xc,yc),(0,0,0))
                         if xw >= xc and yw <= yc :
                             angel = numpy.degrees( numpy.arcsin(abs(yc-yw) / numpy.sqrt(abs(yc-yw)**2 + abs(xc-xw)**2)) )
@@ -219,9 +235,12 @@ def track():
                                 if (btn_angle-10 <= angel <= btn_angle+10):
                                     pyautogui.moveTo(((w_screen/2)-250+xb), ((h_screen/2)-270+yb))
                                     
+                        if mouse_mod():
+                            if minx <= xi <=maxx and miny <= yi <= maxy:
+                                pyautogui.moveTo((xi-minx)*(w_screen/(maxx-minx)),(yi-miny)*(h_screen/(maxy-miny)))
 
                         if maxset == False:
-                            maxx = xt1
+                            maxx = xt
                             maxy = (maxx*h_screen)/(w_screen) 
 
                     if hand1_click and hand2_click:

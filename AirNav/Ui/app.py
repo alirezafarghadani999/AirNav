@@ -28,7 +28,10 @@ class Ui:
 
         # تنظیم مختصات پنجره بر اساس محاسبات قبلی
         root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-        # root.wm_attributes("-transparentcolor", "#f0f0f0")
+        try:
+            root.wm_attributes("-transparentcolor", "#f0f0f0")
+        except:
+            pass
         canvas = tk.Canvas(root, width=window_width, height=window_height)
         canvas.pack()
         root.overrideredirect(1) #Remove border
