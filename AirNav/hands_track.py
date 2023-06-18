@@ -2,21 +2,24 @@ import cv2
 import mediapipe as mp
 import numpy
 import math
-from Ui.app import Ui
+from app import Ui
 import threading
 import pyautogui
 import tkinter
-
-with open("Ui/end.txt" ,"w") as f :
-    f.write("False")
 
 
 minx , miny ,maxx, maxy = 1,1,5,5
 minset , maxset = False ,False
 set_openmenu_point = 0
 
-flip = True
-fix_val = 10
+with open("setting/track.txt", "r") as f:
+    setting = f.read().split("\n")
+
+flip =False
+if setting[0] == "True":
+    flip = True
+
+fix_val = int(float(setting[1]))
 
 hold_1 , hold_2 = 0,0
 hold_time = 20
@@ -102,7 +105,7 @@ def track():
             results = hands.process(image_rgb)
 
             hand1_click , hand2_click = False , False
-            cv2.rectangle(image,(int(minx),int(miny),int(maxx-minx),int(maxy-miny)),(0,0,255),1)
+            cv2.rectangle(image,(int(minx),int(miny),int(abs(maxx-minx)),int(maxy)),(0,0,255),1)
 
             
             if results.multi_hand_landmarks:
@@ -175,7 +178,7 @@ def track():
 
                         if maxset == False:
                             maxx = xt1
-                            maxy = (maxx*h_screen)/(w_screen) 
+                            maxy = (maxx-minx)*(h_screen/w_screen) 
     
 
 
@@ -241,7 +244,7 @@ def track():
 
                         if maxset == False:
                             maxx = xt
-                            maxy = (maxx*h_screen)/(w_screen) 
+                            maxy = (maxx-minx)*(h_screen/w_screen) 
 
                     if hand1_click and hand2_click:
                         minset ,maxset = True, True
