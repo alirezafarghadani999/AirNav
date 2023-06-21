@@ -173,8 +173,8 @@ def track():
                                     pyautogui.moveTo(((w_screen/2)-250+xb), ((h_screen/2)-270+yb))
                         
                         if mouse_mod():
-                            if minx <= xi1 <=maxx and miny <= yi1 <= maxy:
-                                pyautogui.moveTo((xi1-minx)*(w_screen/(maxx-minx)),(yi1-miny)*(h_screen/(maxy-miny)))
+                            if minx <= xi1 <=maxx and miny <= yi1 <= maxy+miny:
+                                pyautogui.moveTo((xi1-minx)*(w_screen/(maxx-minx)),(yi1-miny)*(h_screen/(maxy)))
 
                         if maxset == False:
                             maxx = xt1
@@ -239,8 +239,8 @@ def track():
                                     pyautogui.moveTo(((w_screen/2)-250+xb), ((h_screen/2)-270+yb))
                                     
                         if mouse_mod():
-                            if minx <= xi <=maxx and miny <= yi <= maxy:
-                                pyautogui.moveTo((xi-minx)*(w_screen/(maxx-minx)),(yi-miny)*(h_screen/(maxy-miny)))
+                            if minx <= xi <=maxx and miny <= yi <= maxy+miny:
+                                pyautogui.moveTo((xi-minx)*(w_screen/(maxx-minx)),(yi-miny)*(h_screen/(maxy)))
 
                         if maxset == False:
                             maxx = xt
